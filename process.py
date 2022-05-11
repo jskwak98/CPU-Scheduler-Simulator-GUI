@@ -24,7 +24,7 @@ response_time(numeric)  : actual response time
 
 class Process:
 
-    def __init__(self, process_name, arrival_time, cpu_burst_time, first_response, priority):
+    def __init__(self, process_name: str, arrival_time: int | float, cpu_burst_time: int | float, first_response: int | float, priority: int):
         self.process_name = process_name
         self.arrival_time = arrival_time
         self.cpu_burst_time = cpu_burst_time
@@ -36,11 +36,11 @@ class Process:
         self.cumulative_wt = 0
         self.response_time = -1
 
-    def use_cpu(self, time_used, current_time):
+    def use_cpu(self, time_used: int | float, current_time: int | float) -> bool:
         """
         :param time_used: passed from scheduler, time using cpu, numeric
         :param current_time: passed from scheduler, current time
-        :return(?) process_done: boolean flag notifying if the process is complete or not
+        :return(?) process_done: bool flag notifying if the process is complete or not
 
         scheduler will sort the list of the process according to its property(FCFS by arrival time etc...)
         or simulate scheduling according to its property(maybe RR?)
@@ -52,7 +52,7 @@ class Process:
         """
         pass
 
-    def get_result(self):
+    def get_result(self) -> tuple:
         """
         :return result: RT, WT, TT, maybe can define class for this in utils.py, or just use tuple
         """
