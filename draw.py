@@ -25,8 +25,12 @@ class ChartDrawer:
     """
     def __init__(self, schedule: Schedule):
         self.schedule = schedule.schedule
+        self.data = None  # pd.DataFrame
 
-    def schedule_to_df(self) -> pd.DataFrame:
+    def schedule_to_df(self):
+        """
+        change schedule list into pd.DataFrame, each row consisted of start, end, job
+        """
         pass
 
     def draw_gantt_chart(self):
