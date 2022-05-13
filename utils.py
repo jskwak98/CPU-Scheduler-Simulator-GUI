@@ -33,7 +33,7 @@ class TimeMismatchError(Exception):
     can happen if you add up time of your scheduler incorrectly
     Just for debugging
     """
-    def __init__(self, scheduler_time: int, process_time: int, e_type: int):
+    def __init__(self, scheduler_time: int, process_time: int, e_type: int = 1):
         self.scheduler_time = scheduler_time
         self.process_time = process_time
         self.e_type = e_type

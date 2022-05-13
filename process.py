@@ -65,7 +65,7 @@ class Process:
 
         # Error occurs when your scheduler allocate CPU to process not arrived yet
         if self.arrival_time > current_time:
-            raise TimeMismatchError(current_time, self.arrival_time)
+            raise TimeMismatchError(current_time, self.arrival_time, 0)
 
         # Error occurs when your scheduler allocate excessive cpu burst time to the process
         if allocated_burst_time > self.time_left:
