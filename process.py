@@ -18,9 +18,14 @@ last_time_out(int)      : stores time when the process was context switched by t
 time_left(int)          : stores required cpu burst time to complete the process;
                           initialized same as cpu_burst_time;
                           can be used to compute WT, TT, RT
-cumulative_wt(int)      : stores time the process was in the ready queue; WT itself
-response_time(int)      : actual response time
+wait_time(int)          : stores time the process was in the ready queue; WT itself
+response_time(int)      : actual response time; RT itself
+turnaround_time(int)    : stores time when the process was done; TT itself
+
+process_complete(bool)  : flag used to check whether the process is finished
 """
+
+from utils import WrongCpuBurstTimeError, TimeMismatchError, CompletedProcessAgainError
 
 class Process:
 
@@ -31,29 +36,62 @@ class Process:
         self.cpu_burst_time = cpu_burst_time
         self.priority = priority
 
-        self.last_time_out = -1
+        self.last_time_out = self.arrival_time
         self.time_left = self.cpu_burst_time
-        self.cumulative_wt = 0
-        self.response_time = -1
 
-    def use_cpu(self, time_used: int, current_time: int) -> bool:
+        self.wait_time = 0
+        self.response_time = -1
+        self.turnaround_time = -1
+
+        self.process_complete = False
+
+    def use_cpu(self, allocated_burst_time: int, current_time: int):
         """
-        :param time_used: passed from scheduler, time using cpu, int
-        :param current_time: passed from scheduler, current time
-        :return(?) process_done: bool flag notifying if the process is complete or not
+        :param allocated_burst_time: passed from scheduler, time using cpu, int
+        :param current_time: passed from scheduler, current time, when process start using the cpu
+        :return None
 
         scheduler will sort the list of the process according to its property(FCFS by arrival time etc...)
         or simulate scheduling according to its property(maybe RR?)
 
         then it pop out the process from the ready queue and just use this method in order to use cpu
-        process.use_cpu(time_used, current_time)
+        process.use_cpu(allocated_burst_time, current_time)
 
         all WT RT TT can be computed in this function.
         """
-        pass
+        # Error occurs when your scheduler allocate CPU to finished process
+        if self.process_complete:
+            raise CompletedProcessAgainError(current_time, self.turnaround_time)
 
-    def get_result(self) -> tuple:
+        # Error occurs when your scheduler allocate CPU to process not arrived yet
+        if self.arrival_time > current_time:
+            raise TimeMismatchError(current_time, self.arrival_time)
+
+        # Error occurs when your scheduler allocate excessive cpu burst time to the process
+        if allocated_burst_time > self.time_left:
+            raise WrongCpuBurstTimeError(allocated_burst_time, self.time_left)
+
+        # compute wait time and add it up to wait_time
+        if current_time - self.last_time_out < 0:
+            raise TimeMismatchError(current_time, self.last_time_out)
+        self.wait_time += current_time - self.last_time_out
+
+        # check if response happened, if it did, store it to response time
+        if self.response_time == -1 and self.service_time <= (self.cpu_burst_time - self.time_left) + allocated_burst_time:
+            self.response_time = current_time + self.service_time - (self.cpu_burst_time - self.time_left)
+
+        # use cpu and modify last_time_out
+        self.time_left -= allocated_burst_time
+        self.last_time_out = current_time + allocated_burst_time
+
+        # check if process is completed, if it did, compute TT and mark process_done flag True
+        if self.time_left == 0:
+            self.turnaround_time = self.last_time_out - self.arrival_time
+            self.process_complete = True
+
+    def get_result(self) -> dict:
         """
-        :return result: RT, WT, TT, maybe can define class for this in utils.py, or just use tuple
+        :return result: dictionary which contains PID, WT, RT, TT
         """
-        pass
+        result = {"PID": self.process_ID, "WT": self.wait_time, "RT": self.response_time, "TT": self.turnaround_time}
+        return result
