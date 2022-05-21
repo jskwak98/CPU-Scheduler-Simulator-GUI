@@ -78,7 +78,7 @@ class Process:
 
         # check if response happened, if it did, store it to response time
         if self.response_time == -1 and self.service_time <= (self.cpu_burst_time - self.time_left) + allocated_burst_time:
-            self.response_time = current_time + self.service_time - (self.cpu_burst_time - self.time_left)
+            self.response_time = current_time + self.service_time - (self.cpu_burst_time - self.time_left) - self.arrival_time
 
         # use cpu and modify last_time_out
         self.time_left -= allocated_burst_time
