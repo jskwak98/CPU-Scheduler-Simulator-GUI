@@ -5,3 +5,7 @@ __pycache__/
 
 # editor, os cache directory
 .idea/
+
+# unnecessary ipynb used for experiment
+priority_simulator.ipynb
+priorityrr_simulator.ipynb
