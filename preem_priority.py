@@ -67,6 +67,9 @@ class preem_priority():
                     if ready_q:   #레디큐에 있으면
                         R = ready_q[0]  # 레디큐 맨 앞에 있는 걸 실행
                         ready_q = ready_q[1:]  # 레디큐에서 뺐으니 삭제해줌
+
+                        if R.response_time == -1:  # 큐에 있던 놈이 실행되는 거면
+                            R.response_time = R.wait_time  # 응답시간 = 대기시간
                     else :   #레디큐에 없으면
                         t = BBB   #그 다음 오는 놈인 p_l[0] 이 실행되니
                         R = p_l[0]
@@ -110,7 +113,7 @@ class preem_priority():
 
                     if (R.response_time == -1) and (R.wait_time == 0):   #도착한놈이 바로 실행되면
                         R.response_time = 0  # 도착하고 바로 실행되니 응답시간 0
-                    elif R.response_time == -1 : #큐에 있던 놈이 실행되는 거면
+                    elif R.response_time == -1 : #큐에 있던 놈이 처음 실행되는 거면
                         R.response_time = R.wait_time   #응답시간 = 대기시간
 
                     continue
@@ -132,8 +135,6 @@ class preem_priority():
                 else:  # 레디큐에 프로세스가 없을 때
                     if R:  # 실행중인게 있을 때
                         t = t + R.time_left  # 시간을 바꿔주고
-                        for proc in ready_q:  # 대기시간 증가
-                            proc.wait_time = proc.wait_time + R.time_left
                         R.time_left = 0  # 실행중인거 다 수행
                         R.turnaround_time = t - R.arrival_time  # 반환시간 기록
                         gan.append([R.process_ID, t])  # 간태차트
