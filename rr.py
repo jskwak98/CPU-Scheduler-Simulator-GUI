@@ -6,9 +6,9 @@ from utils import Schedule
 from process import Process
 
 
-class Priority(Scheduler):
+class RR(Scheduler):
 
-    def __init__(self, process_list: list[Process]):
+    def __init__(self, process_list: list[Process], time_quantum: int):
         """
         attributes
         self.pq : pq is a priority queue, saving (priority, last time the process came out from cpu, pid)
@@ -18,6 +18,7 @@ class Priority(Scheduler):
         """
         super().__init__(process_list)
         self.pq = []
+        self.time_quantum = time_quantum
         self.process_list = deque(sorted(process_list, key=lambda x: x.arrival_time))
         self.process_dict = {}
         for p in process_list:
@@ -33,10 +34,10 @@ class Priority(Scheduler):
             if self.process_list:
                 # put process that arrived since the last process used cpu until current time into ready queue(self.pq)
                 if self.process_list[0].arrival_time <= self.current_time:
-                #현재시간 증가함에 따라, 프로세스 도착하면 process_list에서 빼다가 heapq에 넣어주기  
+                #현재시간 증가함에 따라, 프로세스 도착하면 process_list에서 빼다가 pq에 넣어주기  
                     while self.process_list and self.process_list[0].arrival_time <= self.current_time:
                         p = self.process_list.popleft()
-                        heapq.heappush(self.pq, (p.priority, p.last_time_out, p.process_ID))
+                        heapq.heappush(self.pq, (p.last_time_out, p.process_ID))
                 # No process to use cpu in current time, proceed time to the arrival time of the next process
                 if not last_out_process and not self.pq: #지금 당장 실행할 프로세스가 없는 경우: empty
                     self.current_time = self.process_list[0].arrival_time
@@ -48,12 +49,12 @@ class Priority(Scheduler):
             # put the incomplete back to the ready queue
             if last_out_process: 
                 # slight tie breaker needed, add small number to make sure it's behind the process who went in right now
-                heapq.heappush(self.pq, (last_out_process.priority, last_out_process.last_time_out + 0.001, last_out_process.process_ID))
+                heapq.heappush(self.pq, (last_out_process.last_time_out + 0.001, last_out_process.process_ID))
 
-            # pop from the pq, that's the process that should use cpu right now ;;;timequantum과 비교하는 과정을 빼버림
-            pid = heapq.heappop(self.pq)[2]
+            # pop from the pq, that's the process that should use cpu right now
+            pid = heapq.heappop(self.pq)[1]
             last_out_process = self.process_dict[pid]
-            use_time = last_out_process.time_left
+            use_time = self.time_quantum if self.time_quantum <= last_out_process.time_left else last_out_process.time_left
             last_out_process.use_cpu(use_time, self.current_time)
             self.current_time += use_time
             self.schedule.add_schedule(last_out_process.process_ID, self.current_time)
