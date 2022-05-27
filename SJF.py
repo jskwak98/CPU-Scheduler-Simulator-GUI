@@ -31,7 +31,10 @@ class SJF(Scheduler):
                 break
 
             pid = heapq.heappop(self.pq)[2]
-            self.current_time += self.process_dict[pid].cpu_burst_time
+            process = self.process_dict[pid]
+
+            process.use_cpu(process.time_left, self.current_time)
+            self.current_time += process.cpu_burst_time
             self.schedule.add_schedule(pid, self.current_time)
             
 
