@@ -23,9 +23,9 @@ class SJF(Scheduler):
                     p = self.process_list.popleft()
                     heapq.heappush(self.pq, (p.cpu_burst_time, p.arrival_time, p.process_ID))
                 if not self.pq:
-                    process = self.process_list.popleft()
-                    self.schedule.add_schedule("None", self.current_time) #스케쥴러 추가가 먼저일지?
-                    self.current_time = process.arrival_time #현재 시간을 다음 프로세스 도착 시간으로 바꿔주는게 먼저일지?
+                    process = self.process_list[0]
+                    self.current_time = process.arrival_time
+                    self.schedule.add_schedule("None", self.current_time)
                     continue
             elif not self.pq:
                 break
@@ -33,5 +33,6 @@ class SJF(Scheduler):
             pid = heapq.heappop(self.pq)[2]
             self.current_time += self.process_dict[pid].cpu_burst_time
             self.schedule.add_schedule(pid, self.current_time)
+            
 
         return self.schedule
