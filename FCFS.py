@@ -46,8 +46,8 @@ class FCFS(Scheduler):
 
             # 아직 process_list의 가장 빠른 process의 도착시간이 안돼서 CPU가 노는 경우
             elif self.process_list and self.process_list[0].arrival_time > self.current_time:
-                self.schedule.add_schedule('None', self.current_time)
                 self.current_time = self.process_list[0].arrival_time
+                self.schedule.add_schedule('None', self.current_time)
                 # 시간을 다음 도착할 process의 arrival time으로 바꿔줄것
                 # 스케쥴에는 다음과 같이 기록해볼 것.
             # 끝난 경우
