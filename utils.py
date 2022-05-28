@@ -8,6 +8,7 @@ class Schedule:
     def __init__(self):
         self.schedule = []
 
+
     def add_schedule(self, process_name: str, time_out: int):
         if self.schedule and self.schedule[-1][0] == process_name:
             self.schedule.pop()
