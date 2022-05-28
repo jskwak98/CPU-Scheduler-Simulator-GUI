@@ -26,12 +26,33 @@ class ChartDrawer:
     def __init__(self, schedule: Schedule):
         self.schedule = schedule.schedule
         self.data = None  # pd.DataFrame
+        self.schedule_to_df()
 
     def schedule_to_df(self):
         """
         change schedule list into pd.DataFrame, each row consisted of start, end, job
         """
-        pass
+        prev_time = 0
+        to_draw = []
+        for record in self.schedule:
+            pid, end = record
+            if pid == 'None':
+                prev_time = end
+                continue
+            else:
+                to_draw.append(dict(Pid=pid, Start=prev_time, End=end, Stack=1))
+                prev_time = end
+        self.data = pd.DataFrame(to_draw)
+        self.data['delta'] = self.data['End'] - self.data['Start']
 
     def draw_gantt_chart(self):
-        pass
+        gantt = pex.timeline(self.data, x_start='Start', x_end='End', color='Pid',
+                             y=['']*self.data.shape[0], height=300, title='Gantt Chart')
+
+        gantt.layout.xaxis.type = 'linear'
+        gantt.update_yaxes(visible=False, showticklabels=False)
+        for d in gantt.data:
+            filt = self.data['Pid'] == d.name
+            d.x = self.data[filt]['delta'].tolist()
+
+        return gantt
