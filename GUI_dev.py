@@ -5,11 +5,11 @@ from draw import ChartDrawer
 
 from fcfs import FCFS
 from sjf import SJF
+from srtf import SRTF
 from rr import RR
 from priority import Priority
 from priorityrr import PriorityRR
 from preem_priority import PPriority
-# import srtf
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
@@ -21,8 +21,8 @@ def scheduler_selector(selection):
         return FCFS
     elif selection == "SJF":
         return SJF
-    #elif selection == "SRTF":
-    #    return SRTF
+    elif selection == "SRTF":
+        return SRTF
     elif selection == "RR":
         return RR
     elif selection == "NP-P":
@@ -35,8 +35,8 @@ def scheduler_selector(selection):
 def make_process_list(data):
     process_list = []
     for row in data:
-        pid, a, s, p, b = row
-        process_list.append(Process(pid, a, s, p, b))
+        pid, a, s, p = row
+        process_list.append(Process(pid, a, s, p))
     return process_list
 
 class SimulatorGUI(QWidget):
@@ -83,8 +83,13 @@ class SimulatorGUI(QWidget):
 
     def reset(self):
         self.input_frame.reset()
+        if self.result_frame.to_erase:
+            self.result_frame.reset()
 
     def simulate(self):
+        if not self.input_frame.input_data:
+            return
+
         # make process list based on the input data
         process_list = make_process_list(self.input_frame.input_data)
 
@@ -92,6 +97,9 @@ class SimulatorGUI(QWidget):
         selection = self.input_frame.alg_selection.currentText()
         schedulerClass = scheduler_selector(selection)
         if selection in {"RR", "NP-P-RR"}:
+            if not self.input_frame.time_quantum.text():
+                QMessageBox.information(self, '시간할당량 미입력', '시간할당량을 필요로 하는 알고리즘입니다.')
+                return
             scheduler = schedulerClass(process_list, int(self.input_frame.time_quantum.text()))
         else:
             scheduler = schedulerClass(process_list)
@@ -113,7 +121,6 @@ class SimulatorGUI(QWidget):
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
-
 
 
 class InputPart(QWidget):
@@ -149,7 +156,7 @@ class InputPart(QWidget):
         self.alg_selection.addItem('NP-P-RR')
 
         self.time_quantum = QLineEdit()
-        self.time_quantum.setPlaceholderText('Time Quantum')
+        self.time_quantum.setPlaceholderText('시간할당량')
         self.time_quantum.setValidator(QIntValidator(1, 20))
 
         alg_layout.addStretch(1)
@@ -166,25 +173,20 @@ class InputPart(QWidget):
         proc_layout.addWidget(QLabel('도착시간'), 0, 0)
         proc_layout.addWidget(QLabel('서비스시간'), 0, 1)
         proc_layout.addWidget(QLabel('우선순위'), 0, 2)
-        proc_layout.addWidget(QLabel('시간할당량'), 0, 3)
 
         self.arrival = QLineEdit()
         self.arrival.setValidator(QIntValidator(0, 50))
         self.arrival.setPlaceholderText('0 ~ 50')
         self.service = QLineEdit()
         self.service.setValidator(QIntValidator(1, 20))
-        self.service.setPlaceholderText('1 ~ 시간할당량')
+        self.service.setPlaceholderText('1 ~ 20')
         self.priority = QLineEdit()
         self.priority.setValidator(QIntValidator(0, 9))
         self.priority.setPlaceholderText('0 ~ 9')
-        self.burst = QLineEdit()
-        self.burst.setValidator(QIntValidator(1, 20))
-        self.burst.setPlaceholderText('1 ~ 20')
 
         proc_layout.addWidget(self.arrival, 1, 0)
         proc_layout.addWidget(self.service, 1, 1)
         proc_layout.addWidget(self.priority, 1, 2)
-        proc_layout.addWidget(self.burst, 1, 3)
 
         # buttons
         manual_layout = QHBoxLayout()
@@ -229,9 +231,9 @@ class InputPart(QWidget):
 
         self.table = QTableWidget()
         self.table.setRowCount(10)
-        self.table.setColumnCount(5)
+        self.table.setColumnCount(4)
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        labels = ['PID', '도착시간', '서비스시간', '우선순위', '시간할당량']
+        labels = ['PID', '도착시간', '서비스시간', '우선순위']
         self.table.setHorizontalHeaderLabels(labels)
         table_view.addWidget(self.table)
         table_groupbox.setLayout(table_view)
@@ -243,14 +245,18 @@ class InputPart(QWidget):
         self.setLayout(input_frame)
 
     def add_data(self):
-        a = int(self.arrival.text())
-        s = int(self.service.text())
-        p = int(self.priority.text())
-        b = int(self.burst.text())
+        if self.arrival.text() and self.service.text() and self.priority.text():
+            a = int(self.arrival.text())
+            s = int(self.service.text())
+            p = int(self.priority.text())
 
-        self.add_with_val(a, s, p, b)
+            self.add_with_val(a, s, p)
+        else:
+            return
 
     def delete_data(self):
+        if self.row_count == 0:
+            return
         self.row_count -= 1
         self.table.removeRow(self.row_count)
         self.table.setRowCount(self.max_count)
@@ -258,33 +264,31 @@ class InputPart(QWidget):
 
     def add_random_data(self):
         a = randint(0, 50)
+        s = randint(1, 20)
         p = randint(0, 4)
-        b = randint(1, 20)
-        s = randint(1, b)
-        self.add_with_val(a, s, p, b)
+        self.add_with_val(a, s, p)
 
     def add_example(self):
-        self.add_with_val(0, 1, 3, 10)
-        self.add_with_val(1, 1, 2, 28)
-        self.add_with_val(2, 1, 4, 6)
-        self.add_with_val(3, 1, 1, 4)
-        self.add_with_val(3, 1, 2, 14)
+        self.add_with_val(0, 10, 3)
+        self.add_with_val(1, 28, 2)
+        self.add_with_val(2, 6, 4)
+        self.add_with_val(3, 4, 1)
+        self.add_with_val(4, 14, 2)
 
-    def add_with_val(self, a, s, p, b):
+    def add_with_val(self, a, s, p):
         # TODO input error handling, service는 burst보다 작거나 같다, 둘 모두 1 이상
         temp = []
         temp.append(f"P{self.row_count + 1}")
         temp.append(a)
         temp.append(s)
         temp.append(p)
-        temp.append(b)
 
         # increase max row
         if self.row_count + 1 == self.max_count:
             self.max_count += 1
             self.table.setRowCount(self.max_count)
 
-        for col in range(5):
+        for col in range(4):
             self.table.setItem(self.row_count, col, QTableWidgetItem(str(temp[col])))
 
         self.input_data.append(temp)
@@ -300,7 +304,6 @@ class InputPart(QWidget):
         self.arrival.setText("")
         self.service.setText("")
         self.priority.setText("")
-        self.burst.setText("")
 
 
 class OutputPart(QWidget):
@@ -308,6 +311,7 @@ class OutputPart(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
+        self.to_erase = False
 
     def initUI(self):
         # 전체 프레임 생성
@@ -394,6 +398,8 @@ class OutputPart(QWidget):
 
     def reflect(self, process_list):
         n = len(process_list)
+        self.to_erase = True
+        self.data_n = n
         rc = n if n >= 10 else 10
         self.table.setRowCount(rc)
 
@@ -419,6 +425,19 @@ class OutputPart(QWidget):
         cd = ChartDrawer(schedule)
         chart = cd.draw_gantt_chart()
         return chart
+
+    def reset(self):
+        self.avg_w.setText(str(0))
+        self.avg_t.setText(str(0))
+        self.avg_r.setText(str(0))
+
+        for row in range(self.data_n-1, -1, -1):
+            self.table.removeRow(row)
+            self.table.setRowCount(10)
+
+
+
+
 
 
 
