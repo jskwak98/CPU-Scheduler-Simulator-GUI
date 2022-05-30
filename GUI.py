@@ -3,13 +3,13 @@ from random import randint
 from process import Process
 from draw import ChartDrawer
 
-from fcfs import FCFS
-from sjf import SJF
-from srtf import SRTF
-from rr import RR
-from priority import Priority
-from priorityrr import PriorityRR
-from preem_priority import PPriority
+from schedulers.fcfs import FCFS
+from schedulers.sjf import SJF
+from schedulers.srtf import SRTF
+from schedulers.rr import RR
+from schedulers.priority import Priority
+from schedulers.priorityrr import PriorityRR
+from schedulers.preem_priority import PPriority
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
