@@ -1,6 +1,4 @@
-from asyncore import poll3
 from collections import deque
-from sys import ps1
 from scheduler import Scheduler
 from utils import Schedule
 from process import Process

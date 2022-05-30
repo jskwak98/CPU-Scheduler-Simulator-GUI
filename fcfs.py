@@ -13,9 +13,7 @@ FCFS Scheduler
 use_cpu(burst_time, current_time)를 사용하는 경우에만 프로세스 클래스 내에서 모두 계산됩니다.)
 """
 
-from asyncore import poll3
 from collections import deque
-from sys import ps1
 from scheduler import Scheduler
 from utils import Schedule
 from process import Process
@@ -40,7 +38,7 @@ class FCFS(Scheduler):
                 # 남은 시간만큼, 지금 시점에 cpu 사용
                 process.use_cpu(process.time_left, self.current_time)
                 # 사용 후 현재 시간 계산
-                self.time += process.cpu_burst_time
+                self.current_time += process.cpu_burst_time
                 # 스케쥴에 결과를 기록하기
                 self.schedule.add_schedule(process.process_ID, self.current_time)
 

@@ -1,6 +1,7 @@
 from process import Process
+from utils import Schedule
 
-class preem_priority():
+class PPriority:
     def __init__(self, process_list: list):
         self.process_list = process_list
 
@@ -49,7 +50,7 @@ class preem_priority():
         # 간테 차트를 위한 리스트. [p1,10] 이면 10까지 p1이 run 했다는 뜻.
         gan = []
         if t > 0:
-            gan.append(['XXX', t])
+            gan.append(['None', t])
 
         # 무한루프 시작
         while True:
@@ -74,7 +75,7 @@ class preem_priority():
                         t = BBB   #그 다음 오는 놈인 p_l[0] 이 실행되니
                         R = p_l[0]
                         p_l = p_l[1:]
-                        gan.append(['XXX', t])  # 간테차트. 이땐 아무것도 없음
+                        gan.append(['None', t])  # 간테차트. 이땐 아무것도 없음
 
                         R.response_time = 0  # 도착하고 바로 실행되니 응답시간 0
 
@@ -161,4 +162,6 @@ class preem_priority():
         ave_turn = total_turn / len(self.process_list)
 
         # 결과값 : 프로세스 리스트, 평균 대기시간, 평균 응답시간, 평균 반환시간, 간테차트용 리스트
-        return [self.process_list, ave_wait, ave_response, ave_turn, gan]
+        return_schedule = Schedule()
+        return_schedule.schedule = gan
+        return return_schedule

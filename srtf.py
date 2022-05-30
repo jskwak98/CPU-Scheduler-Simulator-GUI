@@ -30,7 +30,7 @@ class SRTF(Scheduler):
             elif not last_out_process and not self.pq:
                 break
             if last_out_process:
-                heapq.heappush(self.pq, (last_out_process.cpu_burst_time, last_out_process.process_ID))
+                heapq.heappush(self.pq, (last_out_process.time_left, last_out_process.process_ID))
 
             pid = heapq.heappop(self.pq)[1]
             last_out_process = self.process_dict[pid]

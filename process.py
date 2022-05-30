@@ -29,11 +29,11 @@ from utils import WrongCpuBurstTimeError, TimeMismatchError, CompletedProcessAga
 
 class Process:
 
-    def __init__(self, process_ID: str, arrival_time: int, service_time: int, priority: int, cpu_burst_time: int):
+    def __init__(self, process_ID: str, arrival_time: int, service_time: int, priority: int):
         self.process_ID = process_ID
         self.arrival_time = arrival_time
-        self.service_time = service_time
-        self.cpu_burst_time = cpu_burst_time
+        #self.service_time = service_time
+        self.cpu_burst_time = service_time
         self.priority = priority
 
         self.last_time_out = self.arrival_time
@@ -77,8 +77,8 @@ class Process:
         self.wait_time += current_time - self.last_time_out
 
         # check if response happened, if it did, store it to response time
-        if self.response_time == -1 and self.service_time <= (self.cpu_burst_time - self.time_left) + allocated_burst_time:
-            self.response_time = current_time + self.service_time - (self.cpu_burst_time - self.time_left) - self.arrival_time
+        if self.response_time == -1:
+            self.response_time = current_time - self.arrival_time
 
         # use cpu and modify last_time_out
         self.time_left -= allocated_burst_time
