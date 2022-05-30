@@ -1,6 +1,6 @@
 from abc import *
 
-from process import Process
+#from process import Process
 from utils import Schedule
 
 class Scheduler(metaclass=ABCMeta):
@@ -12,7 +12,7 @@ class Scheduler(metaclass=ABCMeta):
 
     +) also added current_time attribute, to keep track of the time while scheduling
     """
-    def __init__(self, process_list: list[Process]):
+    def __init__(self, process_list: list):
         self.process_list = process_list
         self.schedule = Schedule()
         self.current_time = 0

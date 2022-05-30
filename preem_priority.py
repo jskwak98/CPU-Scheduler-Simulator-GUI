@@ -1,6 +1,6 @@
 from process import Process
 
-class preem_priority():
+class PPriority:
     def __init__(self, process_list: list):
         self.process_list = process_list
 
@@ -161,4 +161,4 @@ class preem_priority():
         ave_turn = total_turn / len(self.process_list)
 
         # 결과값 : 프로세스 리스트, 평균 대기시간, 평균 응답시간, 평균 반환시간, 간테차트용 리스트
-        return [self.process_list, ave_wait, ave_response, ave_turn, gan]
+        return gan

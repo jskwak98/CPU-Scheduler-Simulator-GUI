@@ -2,6 +2,7 @@ import sys
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
+from PyQt5 import QtWebEngineWidgets
 
 class SimulatorGUI(QWidget):
 
@@ -11,38 +12,31 @@ class SimulatorGUI(QWidget):
 
     def initUI(self):
         total_frame = QVBoxLayout()
+
         input_frame = QHBoxLayout()
 
         input_frame.addWidget(self.createInputGroup())
         input_frame.addWidget(self.createInputProcessTable())
 
         button_frame = self.createSimulateButtonGroup()
+        self.browser = QtWebEngineWidgets.QWebEngineView(self)
+
+        result_frame = QHBoxLayout()
+        result_frame.addLayout(self.createAverage())
+        result_frame.addWidget(self.createOutputProcessTable())
 
         total_frame.addLayout(input_frame)
         total_frame.addWidget(button_frame)
-        #total_frame.addWidget(self.createChart()) # QTableWidget
-        #total_frame.addWidget(self.createAverage())
-        #total_frame.addWidget(self.createOutputProcessTable())
+        total_frame.addWidget(self.browser)
+        total_frame.addLayout(result_frame)
+
 
         self.setLayout(total_frame)
 
         self.setWindowTitle('CPU Scheduler Simulator')
-        self.setGeometry(300, 300, 1200, 400)
+        self.setGeometry(300, 300, 1200, 900)
         self.center()
         self.show()
-
-        # grid = QGridLayout()
-        # grid.addWidget(self.createFirstExclusiveGroup(), 0, 0)
-        # grid.addWidget(self.createNonExclusiveGroup(), 0, 1)
-        # grid.addWidget(self.createSimulateButtonGroup(), 1, 0)
-        # grid.addWidget(self.createSecondExclusiveGroup(), 2, 0)
-        # grid.addWidget(self.createPushButtonGroup(), 2, 1)
-        #
-        # self.setLayout(grid)
-        #
-        # self.setWindowTitle('Box Layout')
-        # self.setGeometry(300, 300, 480, 320)
-        # self.show()
 
     def createSimulateButtonGroup(self):
         groupbox = QGroupBox()
@@ -132,6 +126,64 @@ class SimulatorGUI(QWidget):
         table.setRowCount(10)
         table.setColumnCount(5)
         table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        labels = ['PID', '도착시간', '서비스시간', '우선순위', '시간할당량']
+        table.setHorizontalHeaderLabels(labels)
+
+        return table
+
+    def createAverage(self):
+        total_frame = QVBoxLayout()
+        returns = QHBoxLayout()
+        values = QHBoxLayout()
+
+        avg_w_label = QLabel("평균대기시간")
+        avg_w_label.setAlignment(Qt.AlignHCenter)
+
+        avg_t_labels = QLabel("평균반환시간")
+        avg_t_labels.setAlignment(Qt.AlignHCenter)
+
+        avg_r_labels = QLabel("평균응답시간")
+        avg_r_labels.setAlignment(Qt.AlignHCenter)
+
+        returns.addStretch(3)
+        returns.addWidget(avg_w_label)
+        returns.addStretch(2)
+        returns.addWidget(avg_t_labels)
+        returns.addStretch(2)
+        returns.addWidget(avg_r_labels)
+        returns.addStretch(3)
+
+        avg_w = QLabel("0")
+        avg_w.setAlignment(Qt.AlignHCenter)
+
+        avg_t = QLabel("0")
+        avg_t.setAlignment(Qt.AlignHCenter)
+
+        avg_r = QLabel("0")
+        avg_r.setAlignment(Qt.AlignHCenter)
+
+        values.addStretch(3)
+        values.addWidget(avg_w)
+        values.addStretch(2)
+        values.addWidget(avg_t)
+        values.addStretch(2)
+        values.addWidget(avg_r)
+        values.addStretch(3)
+
+        total_frame.addStretch(1)
+        total_frame.addLayout(returns)
+        total_frame.addLayout(values)
+        total_frame.addStretch(1)
+
+        return total_frame
+
+    def createOutputProcessTable(self):
+        table = QTableWidget()
+        table.setRowCount(10)
+        table.setColumnCount(4)
+        table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        labels = ['PID', '대기시간', '반환시간', '응답시간']
+        table.setHorizontalHeaderLabels(labels)
 
         return table
 

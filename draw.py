@@ -40,19 +40,19 @@ class ChartDrawer:
                 prev_time = end
                 continue
             else:
-                to_draw.append(dict(Pid=pid, Start=prev_time, End=end, Stack=1))
+                to_draw.append(dict(PID=pid, Start=prev_time, End=end, Stack=1))
                 prev_time = end
         self.data = pd.DataFrame(to_draw)
         self.data['delta'] = self.data['End'] - self.data['Start']
 
     def draw_gantt_chart(self):
-        gantt = pex.timeline(self.data, x_start='Start', x_end='End', color='Pid',
-                             y=['']*self.data.shape[0], height=300, title='Gantt Chart')
+        gantt = pex.timeline(self.data, x_start='Start', x_end='End', color='PID',
+                             y=['']*self.data.shape[0], height=320)
 
         gantt.layout.xaxis.type = 'linear'
         gantt.update_yaxes(visible=False, showticklabels=False)
         for d in gantt.data:
-            filt = self.data['Pid'] == d.name
+            filt = self.data['PID'] == d.name
             d.x = self.data[filt]['delta'].tolist()
 
         return gantt
