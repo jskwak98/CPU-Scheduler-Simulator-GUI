@@ -9,3 +9,8 @@ __pycache__/
 # unnecessary ipynb used for experiment
 priority_simulator.ipynb
 reference/*.ipynb
+
+# distributional parts
+build/
+dist/
+main.spec

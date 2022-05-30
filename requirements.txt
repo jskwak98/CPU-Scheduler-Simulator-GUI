@@ -1,0 +1,7 @@
+numpy==1.22.4
+pandas==1.4.2
+plotly==5.8.0
+pyinstaller==5.1
+PyQt5==5.15.6
+PyQtWebEngine==5.15.5
+kaleido==0.2.1
