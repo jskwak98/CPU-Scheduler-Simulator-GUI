@@ -1,0 +1,16 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# editor, os cache directory
+.idea/
+
+# unnecessary ipynb used for experiment
+priority_simulator.ipynb
+reference/*.ipynb
+
+# distributional parts
+build/
+dist/
+main.spec
