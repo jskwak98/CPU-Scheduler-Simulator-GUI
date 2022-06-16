@@ -14,7 +14,7 @@ from schedulers.preem_priority import PPriority
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
 from PyQt5 import QtWebEngineWidgets
-from PyQt5.QtGui import QIntValidator
+from PyQt5.QtGui import QIntValidator, QFont
 
 def scheduler_selector(selection):
     if selection == "FCFS":
@@ -57,7 +57,7 @@ class SimulatorGUI(QWidget):
 
         self.input_frame = InputPart()
         self.input_frame.setMinimumHeight(panel_height)
-        button_frame = self.createSimulateButtonGroup()
+        button_frame = self.createSimulateButtonGroup(button_height)
         button_frame.setMinimumHeight(button_height)
         self.result_frame = OutputPart(panel_height)
 
@@ -71,14 +71,25 @@ class SimulatorGUI(QWidget):
         self.center()
         self.show()
 
-    def createSimulateButtonGroup(self):
+    def createSimulateButtonGroup(self, button_height):
         groupbox = QGroupBox()
-        groupbox.setMinimumHeight(108)
+        min_h = int(button_height * 3/4)
+        min_w = int(1.6 * min_h)
 
         simulatebutton = QPushButton('Simulate')
         simulatebutton.clicked.connect(self.simulate)
+        simulatebutton.setMinimumHeight(min_h)
+        simulatebutton.setMinimumWidth(min_w)
+        simulatebutton.setFont(QFont('Arial', 15))
+        simulatebutton.setStyleSheet("background-color : green")
+
         resetbutton = QPushButton('Reset')
         resetbutton.clicked.connect(self.reset)
+        resetbutton.setMinimumHeight(min_h)
+        resetbutton.setMinimumWidth(min_w)
+        resetbutton.setFont(QFont('Arial', 15))
+        resetbutton.setStyleSheet("background-color : red")
+
 
         hbox = QHBoxLayout()
         hbox.addStretch(2)
@@ -347,30 +358,36 @@ class OutputPart(QWidget):
         # 평균 통계량 라벨
         avg_w_label = QLabel("평균대기시간")
         avg_w_label.setAlignment(Qt.AlignHCenter)
+        avg_w_label.setFont(QFont('Arial', 15))
 
-        avg_t_labels = QLabel("평균반환시간")
-        avg_t_labels.setAlignment(Qt.AlignHCenter)
+        avg_t_label = QLabel("평균반환시간")
+        avg_t_label.setAlignment(Qt.AlignHCenter)
+        avg_t_label.setFont(QFont('Arial', 15))
 
-        avg_r_labels = QLabel("평균응답시간")
-        avg_r_labels.setAlignment(Qt.AlignHCenter)
+        avg_r_label = QLabel("평균응답시간")
+        avg_r_label.setAlignment(Qt.AlignHCenter)
+        avg_r_label.setFont(QFont('Arial', 15))
 
         returns.addStretch(3)
         returns.addWidget(avg_w_label)
         returns.addStretch(2)
-        returns.addWidget(avg_t_labels)
+        returns.addWidget(avg_t_label)
         returns.addStretch(2)
-        returns.addWidget(avg_r_labels)
+        returns.addWidget(avg_r_label)
         returns.addStretch(3)
 
         # 평균 통계량 값
         self.avg_w = QLabel("0")
         self.avg_w.setAlignment(Qt.AlignHCenter)
+        self.avg_w.setFont(QFont('Arial', 15))
 
         self.avg_t = QLabel("0")
         self.avg_t.setAlignment(Qt.AlignHCenter)
+        self.avg_t.setFont(QFont('Arial', 15))
 
         self.avg_r = QLabel("0")
         self.avg_r.setAlignment(Qt.AlignHCenter)
+        self.avg_r.setFont(QFont('Arial', 15))
 
         values.addStretch(3)
         values.addWidget(self.avg_w)
