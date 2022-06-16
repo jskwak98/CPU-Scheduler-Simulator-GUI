@@ -47,12 +47,12 @@ class ChartDrawer:
 
     def draw_gantt_chart(self):
         gantt = pex.timeline(self.data, x_start='Start', x_end='End', color='PID',
-                             y=['']*self.data.shape[0], height=320)
+                             y=['']*self.data.shape[0], height=320, text='PID')
 
         gantt.layout.xaxis.type = 'linear'
         gantt.update_yaxes(visible=False, showticklabels=False)
         for d in gantt.data:
             filt = self.data['PID'] == d.name
             d.x = self.data[filt]['delta'].tolist()
-
+        gantt.update_traces(textposition='auto')
         return gantt
