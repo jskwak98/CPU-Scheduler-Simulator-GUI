@@ -45,9 +45,9 @@ class ChartDrawer:
         self.data = pd.DataFrame(to_draw)
         self.data['delta'] = self.data['End'] - self.data['Start']
 
-    def draw_gantt_chart(self):
+    def draw_gantt_chart(self, height):
         gantt = pex.timeline(self.data, x_start='Start', x_end='End', color='PID',
-                             y=['']*self.data.shape[0], height=320, text='PID')
+                             y=['']*self.data.shape[0], height=height, text='PID')
 
         gantt.layout.xaxis.type = 'linear'
         gantt.update_yaxes(visible=False, showticklabels=False)

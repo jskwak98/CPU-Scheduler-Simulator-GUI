@@ -46,25 +46,33 @@ class SimulatorGUI(QWidget):
         self.initUI()
 
     def initUI(self):
+        screen = QApplication.primaryScreen()
+
+        h = screen.size().height()
+        panel_height = int(h * 3 / 11)
+        button_height = int(h * 1 / 11)
+
         total_frame = QVBoxLayout()
 
         self.input_frame = InputPart()
+        self.input_frame.setMinimumHeight(panel_height)
         button_frame = self.createSimulateButtonGroup()
-        self.result_frame = OutputPart()
+        button_frame.setMinimumHeight(button_height)
+        self.result_frame = OutputPart(panel_height)
 
         total_frame.addWidget(self.input_frame)
         total_frame.addWidget(button_frame)
         total_frame.addWidget(self.result_frame)
 
         self.setLayout(total_frame)
-
+        self.setGeometry(0, 0, h, h)
         self.setWindowTitle('CPU Scheduler Simulator')
-        self.setGeometry(300, 300, 1250, 1100)
         self.center()
         self.show()
 
     def createSimulateButtonGroup(self):
         groupbox = QGroupBox()
+        groupbox.setMinimumHeight(108)
 
         simulatebutton = QPushButton('Simulate')
         simulatebutton.clicked.connect(self.simulate)
@@ -278,7 +286,7 @@ class InputPart(QWidget):
     def add_with_val(self, a, s, p):
         # TODO input error handling, service는 burst보다 작거나 같다, 둘 모두 1 이상
         temp = []
-        temp.append(f"P{self.row_count + 1}")
+        temp.append(f"P{self.row_count}")
         temp.append(a)
         temp.append(s)
         temp.append(p)
@@ -308,16 +316,18 @@ class InputPart(QWidget):
 
 class OutputPart(QWidget):
 
-    def __init__(self):
+    def __init__(self, chart_height):
         super().__init__()
+        self.chart_height = chart_height
         self.initUI()
         self.to_erase = False
+
 
     def initUI(self):
         # 전체 프레임 생성
         result_frame = QGridLayout()
-        result_frame.setRowMinimumHeight(0, 320)
-        result_frame.setRowMinimumHeight(1, 300)
+        result_frame.setRowMinimumHeight(0, self.chart_height)
+        result_frame.setRowMinimumHeight(1, self.chart_height)
 
         # 간트 차트
         chart_groupbox = QGroupBox("간트 차트")
@@ -423,7 +433,7 @@ class OutputPart(QWidget):
 
     def draw(self, schedule):
         cd = ChartDrawer(schedule)
-        chart = cd.draw_gantt_chart()
+        chart = cd.draw_gantt_chart(self.chart_height)
         return chart
 
     def reset(self):
