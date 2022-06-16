@@ -49,6 +49,7 @@ class SimulatorGUI(QWidget):
         screen = QApplication.primaryScreen()
 
         h = screen.size().height()
+        w = int(h * 1.1)
         panel_height = int(h * 3 / 11)
         button_height = int(h * 1 / 11)
 
@@ -65,7 +66,7 @@ class SimulatorGUI(QWidget):
         total_frame.addWidget(self.result_frame)
 
         self.setLayout(total_frame)
-        self.setGeometry(0, 0, h, h)
+        self.setGeometry(0, 0, w, h)
         self.setWindowTitle('CPU Scheduler Simulator')
         self.center()
         self.show()
